@@ -1,0 +1,31 @@
+<form (submit)="guardarCambios()" [formGroup]="formulario">
+  <h1 mat-dialog-title>
+    {{ data.crear ? "Crear cliente" : "Editar cliente" }}
+  </h1>
+  <div mat-dialog-content>
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Nombre</mat-label>
+      <input matInput formControlName="nombre" placeholder="Nombre" />
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Correo</mat-label>
+      <input matInput formControlName="email" placeholder="Correo" />
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>NIT</mat-label>
+      <input matInput formControlName="nit" placeholder="NIT" />
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Teléfono</mat-label>
+      <input matInput formControlName="telefono" placeholder="Teléfono" />
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Dirección</mat-label>
+      <textarea matInput formControlName="direccion" placeholder="Dirección" style="resize: vertical"></textarea>
+    </mat-form-field>
+  </div>
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" mat-dialog-close>Cancelar</button>
+    <button mat-button type="submit">Guardar</button>
+  </mat-dialog-actions>
+</form>

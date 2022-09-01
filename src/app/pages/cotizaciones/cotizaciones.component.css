@@ -1,0 +1,21 @@
+.cotizacion {
+  border-radius: 0px;
+  height: 128px;
+}
+
+.fecha-cotizacion {
+  font-size: 16px;
+}
+
+.cotizaciones {
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.cotizaciones .mat-card:first-child {
+  border-radius: 4px 4px 0px 0px;
+}
+
+.paginator-cotizaciones {
+  border-radius: 0px 0px 4px 4px;
+}

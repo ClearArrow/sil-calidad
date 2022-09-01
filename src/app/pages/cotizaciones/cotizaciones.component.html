@@ -1,0 +1,55 @@
+<div class="container animated fadeIn fast" *ngIf="!httpServ.cargando">
+  <div class="row mb-3">
+    <div class="col">
+      <mat-card>
+        <mat-card-title class="d-flex align-items-center">Cotizaciones
+          <div class="flex-spacer"></div>
+          <button mat-raised-button color="primary" [routerLink]="['/cotizacion', 'nueva']">
+            <mat-icon class="mr-2">add</mat-icon> Crear nueva
+          </button>
+        </mat-card-title>
+      </mat-card>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12 cotizaciones">
+      <mat-card class="pb-0">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Buscar</mat-label>
+          <input name="estado" placeholder="Buscar" matInput [(ngModel)]="textoBuscado" (ngModelChange)="actualizarPaginas()" />
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+      </mat-card>
+        <mat-card *ngFor="let cotizacion of cotizacionesMostradas, let i = index;" class="cotizacion pb-2">
+          <mat-card-title class="mat-h2 d-flex w-100 mb-0">
+            {{ cotizacion.titulo }}
+            <div class="flex-spacer"></div>
+            <span class="fecha-cotizacion">
+              {{ cotizacion.fecha | date: "dd MMM, yyyy" }}</span>
+          </mat-card-title>
+          <mat-card-subtitle class="mb-1" *ngIf="cotizacion.cliente">
+            {{ cotizacion.cliente.nombre }}
+          </mat-card-subtitle>
+          <mat-card-content class="mb-0">{{ cotizacion.planta }}</mat-card-content>
+          <mat-card-actions class="pt-0" align="end">
+            <button mat-icon-button matTooltip="Enviar a cliente" color="primary" [ngClass]="{ 'spinner deshabilitado': cotizacion.cargando }"
+              (click)="enviarCotizacion(cotizacion, $event, i)">
+              <mat-icon>mail</mat-icon>
+            </button>
+            <button mat-icon-button matTooltip="Consultar PDF" color="accent" (click)="generarPDF(cotizacion, $event)">
+              <mat-icon>picture_as_pdf</mat-icon>
+            </button>
+            <button mat-icon-button matTooltip="Editar" [routerLink]="['/cotizacion', cotizacion.id_cotizacion]">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button matTooltip="Eliminar" color="warn" (click)="eliminarCotizacion(cotizacion, $event)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      <mat-paginator class="paginator-cotizaciones" [length]="!textoBuscado ? cotizaciones.length : cotizacionesBuscadas().length" [pageSize]="5"
+        [pageSizeOptions]="[5, 25, 50]" (page)="onPageChange($event)">
+      </mat-paginator>
+    </div>
+  </div>
+</div>

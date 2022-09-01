@@ -1,0 +1,105 @@
+<div class="container" *ngIf="!httpServ.cargando">
+  <div class="row">
+    <div class="col">
+      <mat-card>
+        <mat-card-title class="d-flex align-items-center"
+          >Clientes
+          <div class="flex-spacer"></div>
+          <button mat-raised-button color="primary" (click)="crearCliente()">
+            <mat-icon class="mr-2">add</mat-icon> Agregar cliente
+          </button>
+        </mat-card-title>
+      </mat-card>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <mat-card id="card-clientes" class="mt-3">
+        <mat-form-field class="mt-2 w-100">
+          <mat-label>Filtrar</mat-label>
+          <input
+            matInput
+            (keyup)="filtrarClientes($event.target)"
+            placeholder="Filtrar"
+          />
+        </mat-form-field>
+        <mat-table
+          mat-table
+          [dataSource]="datosClientes"
+          matSort
+          #tablaClientes
+        >
+          <ng-container matColumnDef="nombre">
+            <mat-header-cell mat-sort-header mat-header-cell *matHeaderCellDef>
+              <mat-icon class="mr-2">person</mat-icon>Nombre</mat-header-cell
+            >
+            <mat-cell mat-cell *matCellDef="let element"
+              >{{ element.nombre }}
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="email">
+            <mat-header-cell mat-sort-header mat-header-cell *matHeaderCellDef>
+              <mat-icon class="mr-2">mail</mat-icon>Correo</mat-header-cell
+            >
+            <mat-cell mat-cell *matCellDef="let element">{{
+              element.email || "—"
+            }}</mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="telefono">
+            <mat-header-cell mat-sort-header mat-header-cell *matHeaderCellDef>
+              <mat-icon class="mr-2">call</mat-icon>Teléfono
+            </mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let element">
+              {{ element.telefono || "—" }}
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="direccion">
+            <mat-header-cell mat-sort-header mat-header-cell *matHeaderCellDef>
+              <mat-icon class="mr-2">home</mat-icon>Dirección
+            </mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let element">
+              {{ element.direccion || "—" }}
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="nit">
+            <mat-header-cell mat-sort-header mat-header-cell *matHeaderCellDef>
+              <mat-icon class="mr-2">badge</mat-icon>NIT
+            </mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let element">
+              {{ element.nit || "—" }}
+              <div class="flex-spacer"></div>
+              <button
+                mat-icon-button
+                matTooltip="Editar"
+                color="primary"
+                (click)="editarCliente(element)"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                matTooltip="Inactivar"
+                color="warn"
+                (click)="eliminarCliente(element)"
+              >
+                <mat-icon>person_off</mat-icon>
+              </button>
+            </mat-cell>
+          </ng-container>
+
+          <mat-header-row *matHeaderRowDef="campos"></mat-header-row>
+          <mat-row mat-row *matRowDef="let row; columns: campos"></mat-row>
+        </mat-table>
+        <mat-paginator
+          #pagClientes
+          [pageSizeOptions]="[10, 20, 50]"
+          showFirstLastButtons
+        ></mat-paginator>
+      </mat-card>
+    </div>
+  </div>
+</div>

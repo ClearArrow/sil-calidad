@@ -1,0 +1,141 @@
+<form [formGroup]="formulario" (ngSubmit)="guardarFactura()" *ngIf="!httpServ.cargando" class="animated fadeIn fast">
+  <mat-card>
+    <mat-card-title>
+      {{ id == "nueva" ? "Registrar Factura" : "Editar Factura" }}
+    </mat-card-title>
+    <mat-card-content class="mt-3">
+      <div class="my-2">
+        <form id="xmlForm" name="xmlForm" (ngSubmit)="procesarXML()">
+          <button mat-raised-button color="primary" (click)="facInput.click()" type="button" class="d-inline-block">
+            <input hidden id="input" type="file" #facInput (change)="hayAdjunto = true" />
+            Adjuntar archivo
+          </button>
+          <!-- <input type="submit" value="Procesar XML"> -->
+          <button mat-raised-button color="accent" type="submit" [disabled]="!hayAdjunto"
+            class="d-inline-block ms-2">Procesar XML</button>
+          <p *ngIf="hayAdjunto" class="mt-2">1 archivo seleccionado</p>
+        </form>
+      </div>
+      <div class="seccion-form mt-2">
+        <mat-form-field appearance="standard" class="w-50">
+          <mat-label>no DTE</mat-label>
+          <input matInput placeholder="no DTE" formControlName="no_DTE" />
+        </mat-form-field>
+        <mat-form-field appearance="standard" class="w-50">
+          <mat-label>Serie</mat-label>
+          <input matInput placeholder="Serie" formControlName="serie" />
+        </mat-form-field>
+        <mat-form-field class="w-50">
+          <mat-label>Fecha autorización</mat-label>
+          <input matInput [matDatepicker]="fechaAutorizacion" formControlName="fecha_autorizacion" />
+          <mat-hint>DD/MM/YYYY</mat-hint>
+          <mat-datepicker-toggle matSuffix [for]="fechaAutorizacion"></mat-datepicker-toggle>
+          <mat-datepicker #fechaAutorizacion></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field class="w-50">
+          <mat-label>Fecha emision</mat-label>
+          <input matInput [matDatepicker]="fechaEmision" formControlName="fecha_emision" />
+          <mat-hint>DD/MM/YYYY</mat-hint>
+          <mat-datepicker-toggle matSuffix [for]="fechaEmision"></mat-datepicker-toggle>
+          <mat-datepicker #fechaEmision></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field appearance="standard" class="w-50">
+          <mat-label>NIT Receptor</mat-label>
+          <input matInput placeholder="NIT Receptor" formControlName="nit_receptor" />
+        </mat-form-field>
+        <mat-form-field appearance="standard" class="w-50">
+          <mat-label>Nombre Receptor</mat-label>
+          <input matInput placeholder="Nombre Receptor" formControlName="nombre_receptor" />
+        </mat-form-field>
+        <mat-form-field appearance="standard" class="w-50">
+          <mat-label>Moneda</mat-label>
+          <input matInput placeholder="Moneda" formControlName="moneda" />
+        </mat-form-field>
+        <mat-form-field appearance="standard" class="w-50">
+          <mat-label>No. de autorización</mat-label>
+          <input matInput placeholder="No. de autorización" formControlName="autorizacion" />
+        </mat-form-field>
+        <mat-form-field appearance="standard" class="w-50">
+          <mat-label>Cantidad</mat-label>
+          <input matInput placeholder="Cantidad" formControlName="cantidad" />
+        </mat-form-field>
+        <mat-form-field appearance="standard" class="w-50">
+          <mat-label>Precio</mat-label>
+          <input matInput placeholder="Precio" formControlName="precio" />
+        </mat-form-field>
+        <mat-form-field appearance="standard" class="w-50">
+          <mat-label>Estado Factura</mat-label>
+          <input matInput placeholder="Estado Factura" formControlName="estado_factura" />
+        </mat-form-field>
+        <!-- <mat-form-field appearance="standard" class="w-100">
+          <mat-label>Enlace Documento</mat-label>
+          <input matInput placeholder="Enlace Documento" formControlName="enlace_doc" />
+        </mat-form-field> -->
+        <mat-form-field class="w-50" appearance="standard">
+          <mat-label>Cotización</mat-label>
+          <input type="text" matInput formControlName="cotizacion" [matAutocomplete]="cotizaciones" />
+          <mat-error *ngIf="cotizacion.hasError('noExiste')">No es una cotización válida</mat-error>
+          <mat-autocomplete autoActiveFirstOption #cotizaciones="matAutocomplete" [displayWith]="mostrarTitulo">
+            <mat-option *ngFor="let coti of cotizacionesFiltradas | async" [value]="coti">
+              {{ coti.titulo }}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+        <mat-form-field appearance="standard" class="w-100">
+          <mat-label>Descripción</mat-label>
+          <textarea matInput placeholder="Descripción" formControlName="descripcion"></textarea>
+        </mat-form-field>
+        <h2 class="mat-h2 d-flex align-items-center">Retenciones
+          <div class="flex-spacer"></div>
+          <button
+            mat-mini-fab
+            color="primary"
+            matTooltip="Agregar retención"
+            type="button"
+            (click)="retencion()"
+            [disabled]="!precio.value || precio.invalid"
+            *ngIf="!(this.iva.value && this.isr.value)"
+          >
+            <mat-icon>add</mat-icon>
+          </button>
+        </h2>
+        <mat-divider></mat-divider>
+        <div class="mat-table" style="min-width:inherit">
+          <div class="mat-row" *ngIf="!iva.value && !isr.value">
+            <div class="mat-cell">No se han agregado retenciones</div>
+          </div>
+          <div class="mat-row" *ngIf="iva.value">
+            <div class="mat-cell">IVA</div>
+            <div class="mat-cell d-flex align-items-center">Q. {{ iva.value.impuesto | number: '1.0-2' }}
+              <div class="flex-spacer"></div>
+              <button mat-icon-button color="accent" matTooltip="Editar" (click)="retencion(iva.value)" type="button">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" matTooltip="Eliminar" (click)="eliminarRetencion(iva)" type="button">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </div>
+          <div class="mat-row" *ngIf="isr.value">
+            <div class="mat-cell">ISR</div>
+            <div class="mat-cell d-flex align-items-center">Q. {{ isr.value.impuesto | number: '1.0-2' }}
+              <div class="flex-spacer"></div>
+              <button mat-icon-button color="accent" matTooltip="Editar" (click)="retencion(isr.value)" type="button">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" matTooltip="Eliminar" (click)="eliminarRetencion(isr)" type="button">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+    <mat-card-actions align="end">
+      <button mat-stroked-button color="warn" type="button" (click)="location.back()">
+        Cancelar
+      </button>
+      <button mat-stroked-button color="primary" type="submit">Guardar</button>
+    </mat-card-actions>
+  </mat-card>
+</form>

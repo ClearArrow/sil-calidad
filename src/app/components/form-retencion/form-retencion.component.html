@@ -1,0 +1,86 @@
+<form (submit)="guardarCambios()">
+  <h1 mat-dialog-title class="d-flex align-items-center">
+    Retención
+    <div class="flex-spacer"></div>
+    <button
+      mat-icon-button
+      color="accent"
+      type="button"
+      *ngIf="enlace_doc"
+      matTooltip="Ver constancia"
+      (click)="abrirDocumento(enlace_doc)"
+    >
+      <mat-icon>open_in_new</mat-icon>
+    </button>
+  </h1>
+  <div mat-dialog-content>
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Tipo</mat-label>
+      <mat-select
+        name="impuesto_tipo"
+        [disabled]="data.impuesto_tipo"
+        [(ngModel)]="impuesto_tipo"
+        (ngModelChange)="calcularImpuesto(impuesto_tipo)"
+        required
+      >
+        <mat-option value="ISR" *ngIf="!tieneISR">ISR</mat-option>
+        <mat-option value="IVA" *ngIf="!tieneIVA">IVA</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="w-100" *ngIf="impuesto_tipo">
+      <mat-label>No. de retención</mat-label>
+      <input
+        name="numero_retencion"
+        matInput
+        [(ngModel)]="numero_retencion"
+        required
+      />
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="w-100" *ngIf="impuesto_tipo">
+      <mat-label>Estado</mat-label>
+      <input name="estado" matInput [(ngModel)]="estado" required />
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="w-100" *ngIf="impuesto_tipo">
+      <mat-label>Impuesto</mat-label>
+      <input name="impuesto" matInput [(ngModel)]="impuesto" required />
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="w-100" *ngIf="impuesto_tipo">
+      <mat-label>Fecha de recibido</mat-label>
+      <input
+        name="fecha_recibido"
+        matInput
+        [matDatepicker]="fechaRecibido"
+        [(ngModel)]="fecha_recibido"
+        required
+      />
+      <mat-hint>DD/MM/YYYY</mat-hint>
+      <mat-datepicker-toggle
+        matSuffix
+        [for]="fechaRecibido"
+      ></mat-datepicker-toggle>
+      <mat-datepicker #fechaRecibido></mat-datepicker>
+    </mat-form-field>
+    <button
+      mat-raised-button
+      class="w-100 my-2"
+      color="primary"
+      type="button"
+      (click)="retInput.click()"
+      *ngIf="impuesto_tipo"
+    >
+      <input
+        hidden
+        id="input"
+        type="file"
+        #retInput
+        (change)="adjuntarArchivo($event)"
+      />
+      Adjuntar constancia
+    </button>
+    <p *ngIf="adjunto">1 archivo seleccionado</p>
+  </div>
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" mat-dialog-close>Cancelar</button>
+    <button mat-button type="submit">Guardar</button>
+  </mat-dialog-actions>
+</form>

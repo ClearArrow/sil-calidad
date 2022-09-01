@@ -1,0 +1,54 @@
+<div id="sidebar" class="d-md-flex d-none">
+  <img
+    src="https://firebasestorage.googleapis.com/v0/b/serviciosil.appspot.com/o/Logo%20SIL.svg?alt=media&token=cbaba31f-c86e-4a49-a48a-a9464a7dd08a"
+    alt="Logo" style="width: 200px; margin: auto; margin-top: 40px" />
+  <div class="mt-3">
+    <button class="sidebar-button" mat-button [routerLink]="['/dashboard']" routerLinkActive="seleccionado">
+      Dashboard
+    </button>
+    <button class="sidebar-button" mat-button [routerLink]="['/proyectos']" routerLinkActive="seleccionado">
+      Proyectos
+    </button>
+    <button class="sidebar-button" mat-button [routerLink]="['/cotizaciones']" routerLinkActive="seleccionado">
+      Cotizaciones
+    </button>
+    <button class="sidebar-button" mat-button [routerLink]="['/facturas']" routerLinkActive="seleccionado">
+      Facturas
+    </button>
+    <button class="sidebar-button" mat-button [routerLink]="['/clientes']" routerLinkActive="seleccionado">
+      Clientes
+    </button>
+  </div>
+  <div class="flex-spacer"></div>
+  <div>
+    <span style="
+        bottom: 0px;
+        position: absolute;
+        color: #fff;
+        width: 250px;
+        text-align: right;
+      " class="mb-3" role="button" [routerLink]="['/login']">Cerrar sesión</span>
+  </div>
+</div>
+
+<div id="navbar" class="d-md-none d-flex">
+  <button mat-icon-button [matMenuTriggerFor]="navegacion" style="margin-right: 16px; color:#fff;">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <div class="flex-spacer"></div>
+  <img
+    src="https://firebasestorage.googleapis.com/v0/b/serviciosil.appspot.com/o/Logo%20SIL.svg?alt=media&token=cbaba31f-c86e-4a49-a48a-a9464a7dd08a"
+    alt="Logo" style="height: 100%; width: auto; margin: auto" />
+  <div class="flex-spacer"></div>
+  <button mat-icon-button style="margin-right: 16px; color:#fff;" [routerLink]="['/login']" matTooltip="Cerrar sesión">
+    <mat-icon>logout</mat-icon>
+  </button>
+</div>
+
+<mat-menu #navegacion="matMenu">
+  <button mat-menu-item [routerLink]="['/dashboard']">Dashboard</button>
+  <button mat-menu-item [routerLink]="['/proyectos']">Proyectos</button>
+  <button mat-menu-item [routerLink]="['/cotizaciones']">Cotizaciones</button>
+  <button mat-menu-item [routerLink]="['/facturas']">Facturas</button>
+  <button mat-menu-item [routerLink]="['/clientes']">Clientes</button>
+</mat-menu>

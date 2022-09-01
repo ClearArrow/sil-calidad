@@ -1,0 +1,194 @@
+<div class="container animated fadeIn fast" *ngIf="factura">
+  <div class="row">
+    <div class="col">
+      <mat-card class="mb-2">
+        <mat-card-title class="d-flex align-items-center">
+          <span
+            [matTooltip]="
+              (factura.estado_factura ? factura.estado_factura : '') | titlecase
+            "
+          >
+            <mat-icon *ngIf="factura.estado_factura == 'anulada'" color="warn"
+              >block</mat-icon
+            >
+            <mat-icon
+              *ngIf="factura.estado_factura == 'enviada'"
+              color="primary"
+              >mark_email_read</mat-icon
+            >
+            <mat-icon
+              *ngIf="
+                factura.estado_factura != 'enviada' &&
+                factura.estado_factura != 'anulada'
+              "
+              color="accent"
+            >
+              task</mat-icon
+            ></span
+          >
+          &nbsp;Factura #{{ factura.no_DTE }}
+          <div class="flex-spacer"></div>
+          <button
+            mat-raised-button
+            color="primary"
+            [matMenuTriggerFor]="opcionesFactura"
+          >
+            <mat-icon class="mr-2">more_horiz</mat-icon> Opciones
+          </button>
+        </mat-card-title>
+        <mat-progress-bar
+          mode="indeterminate"
+          *ngIf="cargando"
+        ></mat-progress-bar>
+      </mat-card>
+    </div>
+  </div>
+  <div class="row">
+    <div
+      class="col-12"
+      [ngClass]="{
+        'col-sm-6 col-md-8 col-lg-9': factura.retenciones.length
+      }"
+    >
+      <mat-card class="mt-2">
+        <mat-card-title>Detalles</mat-card-title>
+        <mat-card-content>
+          <div class="container">
+            <div class="row">
+              <div class="col-md-6 col-12">
+                <mat-list>
+                  <mat-list-item>
+                    <mat-icon mat-list-icon color="accent"
+                      >description</mat-icon
+                    >
+                    <div mat-line><strong>Serie</strong></div>
+                    <div mat-line>{{ factura.serie }}</div>
+                  </mat-list-item>
+                  <mat-list-item>
+                    <mat-icon mat-list-icon color="accent"
+                      >assignment_ind</mat-icon
+                    >
+                    <div mat-line><strong>Autorización</strong></div>
+                    <div mat-line>{{ factura.autorizacion }}</div>
+                  </mat-list-item>
+                  <mat-list-item>
+                    <mat-icon mat-list-icon color="accent">group</mat-icon>
+                    <div mat-line><strong>Receptor</strong></div>
+                    <div mat-line>{{ factura.nombre_receptor }}</div>
+                  </mat-list-item>
+                  <mat-list-item>
+                    <mat-icon mat-list-icon color="accent">group</mat-icon>
+                    <div mat-line><strong>Total facturado</strong></div>
+                    <div mat-line>
+                      {{ factura.moneda | uppercase }}
+                      {{ factura.precio | number: "1.2-2" }}
+                    </div>
+                  </mat-list-item>
+                </mat-list>
+              </div>
+              <div class="col-md-6 col-12">
+                <mat-list>
+                  <mat-list-item>
+                    <mat-icon mat-list-icon color="accent"
+                      >event_available</mat-icon
+                    >
+                    <div mat-line><strong>Fecha de emisión</strong></div>
+                    <div mat-line>
+                      {{ factura.fecha_emision | date: "dd/MM/yyyy" }}
+                    </div>
+                  </mat-list-item>
+                  <mat-list-item>
+                    <mat-icon mat-list-icon color="accent"
+                      >event_available</mat-icon
+                    >
+                    <div mat-line><strong>Fecha de Autorización</strong></div>
+                    <div mat-line>
+                      {{ factura.fecha_autorizacion | date: "dd/MM/yyyy" }}
+                    </div>
+                  </mat-list-item>
+                  <mat-list-item>
+                    <mat-icon mat-list-icon color="accent">badge</mat-icon>
+                    <div mat-line><strong>NIT Receptor</strong></div>
+                    <div mat-line>{{ factura.nit_receptor }}</div>
+                  </mat-list-item>
+                </mat-list>
+              </div>
+              <div class="col-12">
+                <mat-list>
+                  <mat-list-item>
+                    <mat-icon mat-list-icon color="accent">source</mat-icon>
+                    <div mat-line><strong>Proyecto</strong></div>
+                    <div mat-line>
+                      <a
+                        class="color-primario text-decoration-none"
+                        [routerLink]="['/proyecto', proyecto?.id_proyecto]"
+                        >{{ factura.cotizacion.titulo }}</a
+                      >
+                    </div>
+                  </mat-list-item>
+                  <mat-list-item>
+                    <mat-icon mat-list-icon color="accent">assignment</mat-icon>
+                    <div mat-line><strong>Detalle de dactura</strong></div>
+                    <div mat-line>{{ factura.descripcion }}</div>
+                  </mat-list-item>
+                </mat-list>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+    <div
+      class="col-12 col-sm-6 col-md-4 col-lg-3"
+      *ngIf="factura.retenciones.length"
+    >
+      <mat-card class="mt-2" *ngFor="let impuesto of factura.retenciones">
+        <mat-card-title> {{ impuesto.impuesto_tipo }}</mat-card-title>
+        <mat-card-content>
+          <mat-list>
+            <mat-list-item>
+              <mat-icon mat-list-icon color="accent">calendar_month</mat-icon>
+              <div mat-line><strong>Fecha recibida</strong></div>
+              <div mat-line>{{ impuesto.fecha_recibido | date: "dd/MM/yyyy" }}</div>
+            </mat-list-item>
+            <mat-list-item>
+              <mat-icon mat-list-icon color="accent">healing</mat-icon>
+              <div mat-line><strong>Estado</strong></div>
+              <div mat-line>{{ impuesto.estado }}</div>
+            </mat-list-item>
+          </mat-list>
+        </mat-card-content>
+        <mat-card-actions>
+          <a
+            mat-button
+            color="primary"
+            [href]="impuesto.enlace_doc"
+            target="_blank"
+            >Ver constancia</a
+          >
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  </div>
+</div>
+
+<mat-menu #opcionesFactura="matMenu">
+  <ng-template matMenuContent>
+    <button mat-menu-item [routerLink]="['/form-factura', factura.no_DTE]">
+      <mat-icon>edit</mat-icon>
+      <span>Editar</span>
+    </button>
+    <button mat-menu-item (click)="enviarFactura(factura)">
+      <mat-icon>forward_to_inbox</mat-icon>
+      <span>Enviar</span>
+    </button>
+    <button mat-menu-item (click)="imprimirFactura(factura)">
+      <mat-icon>print</mat-icon>
+      <span>Imprimir</span>
+    </button>
+    <button mat-menu-item (click)="anularFactura(factura)">
+      <mat-icon>block</mat-icon>
+      <span>Anular</span>
+    </button>
+  </ng-template>
+</mat-menu>

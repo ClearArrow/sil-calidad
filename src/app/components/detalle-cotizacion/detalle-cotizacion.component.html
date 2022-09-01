@@ -1,0 +1,30 @@
+<div class="mat-row">
+  <div class="mat-cell">
+    <button mat-icon-button color="warn" type="button" (click)="quitarDetalle.emit(true);">
+        <mat-icon>delete</mat-icon>
+    </button>
+    <mat-form-field appearance="standard" style="width:90%">
+      <mat-label>Descripción</mat-label>
+      <input matInput [(ngModel)]="detalle" (change)="actualizar()" />
+    </mat-form-field>
+  </div>
+  <div class="mat-cell" style="max-width: 150px;">
+    <mat-form-field appearance="standard" style="width:98%;">
+      <mat-label>Cantidad</mat-label>
+      <input matInput placeholder="Cantidad" [(ngModel)]="cantidad" (change)="actualizar()" />
+    </mat-form-field>
+  </div>
+  <div class="mat-cell" style="max-width: 150px;">
+    <mat-form-field appearance="standard" style="width:98%;">
+      <mat-label>Unidad</mat-label>
+      <input matInput placeholder="Unidad" [(ngModel)]="unidad" (change)="actualizar()" />
+    </mat-form-field>
+  </div>
+  <div class="mat-cell" style="max-width: 150px;">
+    <mat-form-field appearance="standard" style="width:98%;">
+      <mat-label>Precio</mat-label>
+      <input matInput placeholder="Precio" [(ngModel)]="precio" (change)="actualizar()" />
+    </mat-form-field>
+  </div>
+  
+</div>

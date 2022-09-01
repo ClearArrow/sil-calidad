@@ -1,0 +1,177 @@
+<div class="container animated fadeIn fast" *ngIf="proyecto">
+  <div class="row">
+    <div class="col">
+      <mat-card class="mb-2">
+        <mat-card-title class="d-flex align-items-center"
+          >Proyecto #{{ proyecto.id_proyecto }}
+          <div class="flex-spacer"></div>
+          <button
+            mat-raised-button
+            color="primary"
+            [routerLink]="['/form-proyecto', proyecto.id_proyecto]"
+          >
+            <mat-icon class="mr-2">edit</mat-icon> Editar
+          </button>
+        </mat-card-title>
+      </mat-card>
+    </div>
+  </div>
+  <div class="row">
+    <div
+      class="col-12"
+      [ngClass]="{
+        'col-sm-6 col-md-8 col-lg-9':
+          proyecto.orden_compra || proyecto.vale_recepcion
+      }"
+    >
+      <mat-card class="mb-2">
+        <mat-card-title>{{ proyecto.cotizacion.titulo }}</mat-card-title>
+        <mat-card-content>
+          <div class="container">
+            <div class="row">
+              <div class="col-md-6 col-12">
+                <mat-list>
+                  <mat-list-item>
+                    <mat-icon mat-list-icon color="accent"
+                      >calendar_month</mat-icon
+                    >
+                    <div mat-line><strong>Fecha de envío</strong></div>
+                    <div mat-line>
+                      {{ proyecto.fecha_envio | date: "dd/MM/yyyy" }}
+                    </div>
+                  </mat-list-item>
+                  <mat-list-item>
+                    <mat-icon mat-list-icon color="accent"
+                      >monitor_heart</mat-icon
+                    >
+                    <div mat-line><strong>Estado</strong></div>
+                    <div mat-line>{{ proyecto.proyecto_estado }}</div>
+                  </mat-list-item>
+                  <mat-list-item>
+                    <mat-icon mat-list-icon color="accent">alarm_on</mat-icon>
+                    <div mat-line><strong>Tiempo estimado</strong></div>
+                    <div mat-line>
+                      {{ proyecto.cotizacion.tiempo_estimado }} días
+                    </div>
+                  </mat-list-item>
+                </mat-list>
+              </div>
+              <div class="col-md-6 col-12">
+                <mat-list>
+                  <mat-list-item>
+                    <mat-icon mat-list-icon color="accent">group</mat-icon>
+                    <div mat-line><strong>Cliente</strong></div>
+                    <div mat-line>{{ proyecto.cotizacion.cliente.nombre }}</div>
+                  </mat-list-item>
+                  <mat-list-item>
+                    <mat-icon mat-list-icon color="accent">apartment</mat-icon>
+                    <div mat-line><strong>Planta</strong></div>
+                    <div mat-line>{{ proyecto.cotizacion.planta }}</div>
+                  </mat-list-item>
+                </mat-list>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+      <mat-card class="mb-2" *ngIf="proyecto.cotizacion.detalles?.length">
+        <mat-card-title>Detalles del proyecto</mat-card-title>
+        <mat-card-content>
+          <div class="mat-table w-100" id="tabla-detalles">
+            <div class="mat-header-row">
+              <div class="mat-header-cell">Descripción</div>
+              <div class="mat-header-cell" style="max-width: 150px">
+                Cantidad
+              </div>
+              <div class="mat-header-cell" style="max-width: 150px">Unidad</div>
+              <div class="mat-header-cell" style="max-width: 150px">Precio</div>
+            </div>
+            <div
+              class="mat-row"
+              *ngFor="let detalle of proyecto.cotizacion.detalles"
+            >
+              <div class="mat-cell">{{ detalle.detalle }}</div>
+              <div class="mat-cell" style="max-width: 150px">
+                {{ detalle.cantidad }}
+              </div>
+              <div class="mat-cell" style="max-width: 150px">
+                {{ detalle.unidad }}
+              </div>
+              <div class="mat-cell" style="max-width: 150px">
+                Q. {{ detalle.precio }}
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+    <div
+      class="col-12 col-sm-6 col-md-4 col-lg-3"
+      *ngIf="proyecto.orden_compra || proyecto.vale_recepcion"
+    >
+      <mat-card class="mb-2" *ngIf="proyecto.orden_compra">
+        <mat-card-title>Orden de compra</mat-card-title>
+        <mat-card-content>
+          <mat-list>
+            <mat-list-item>
+              <mat-icon mat-list-icon color="accent">calendar_month</mat-icon>
+              <div mat-line><strong>Fecha recibida</strong></div>
+              <div mat-line>
+                {{ proyecto.orden_compra.fecha_recibida | date: "dd/MM/yyyy" }}
+              </div>
+            </mat-list-item>
+            <mat-list-item>
+              <mat-icon mat-list-icon color="accent">fact_check</mat-icon>
+              <div mat-line><strong>Nombre elaborado</strong></div>
+              <div mat-line>{{ proyecto.orden_compra.nombre_elaborado }}</div>
+            </mat-list-item>
+          </mat-list>
+        </mat-card-content>
+        <mat-card-actions>
+          <a
+            mat-button
+            color="primary"
+            [href]="proyecto.orden_compra.enlace_doc"
+            target="_blank"
+            >Ver documento</a
+          >
+        </mat-card-actions>
+      </mat-card>
+      <mat-card class="mb-2" *ngIf="proyecto.vale_recepcion">
+        <mat-card-title>Vale de recepción</mat-card-title>
+        <mat-card-content>
+          <mat-list>
+            <mat-list-item>
+              <mat-icon mat-list-icon color="accent">calendar_month</mat-icon>
+              <div mat-line><strong>Fecha recibido</strong></div>
+              <div mat-line>
+                {{
+                  proyecto.vale_recepcion.fecha_recibido | date: "dd/MM/yyyy"
+                }}
+              </div>
+            </mat-list-item>
+          </mat-list>
+        </mat-card-content>
+        <mat-card-actions>
+          <a
+            mat-button
+            color="primary"
+            [href]="proyecto.vale_recepcion.enlace_doc"
+            target="_blank"
+            >Ver documento</a
+          >
+        </mat-card-actions>
+      </mat-card>
+      <mat-card class="mb-2" *ngIf="proyecto.comentarios">
+        <mat-card-title>Comentarios</mat-card-title>
+        <mat-card-content>{{ proyecto.comentarios }}</mat-card-content>
+      </mat-card>
+      <mat-card class="mb-2" *ngIf="proyecto.cotizacion.observaciones">
+        <mat-card-title>Observaciones</mat-card-title>
+        <mat-card-content>{{
+          proyecto.cotizacion.observaciones
+        }}</mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

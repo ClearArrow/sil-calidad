@@ -1,0 +1,163 @@
+<div class="container" *ngIf="!httpServ.cargando">
+  <div class="row">
+    <div class="col-12">
+      <mat-card class="mb-3">
+        <mat-card-title>Dashboard</mat-card-title>
+      </mat-card>
+    </div>
+  </div>
+  <div class="row resumen">
+    <div class="col">
+      <mat-card class="mb-3">
+        <mat-card-header>
+          <mat-icon mat-card-avatar [ngClass]="{ 'color-error': pendientes }"
+            >work_history</mat-icon
+          >
+          <mat-card-title
+            ><span [ngClass]="{ 'color-error': pendientes }">{{
+              pendientes
+            }}</span></mat-card-title
+          >
+          <mat-card-subtitle
+            class="mb-0"
+            [ngClass]="{ 'color-error': pendientes }"
+            >proyectos pendientes
+          </mat-card-subtitle>
+        </mat-card-header>
+      </mat-card>
+    </div>
+    <div class="col">
+      <mat-card class="mb-3">
+        <mat-card-header>
+          <mat-icon mat-card-avatar color="primary">engineering</mat-icon>
+          <mat-card-title
+            ><span class="color-primario">{{ enProceso }}</span></mat-card-title
+          >
+          <mat-card-subtitle class="mb-0 color-primario"
+            >proyectos en proceso</mat-card-subtitle
+          >
+        </mat-card-header>
+      </mat-card>
+    </div>
+    <div class="col">
+      <mat-card class="mb-3">
+        <mat-card-header>
+          <mat-icon mat-card-avatar color="accent">savings</mat-icon>
+          <mat-card-title
+            ><span class="color-secundario"
+              >Q. {{ facturado | number: "1.2-2" }}</span
+            ></mat-card-title
+          >
+          <mat-card-subtitle class="mb-0 color-secundario"
+            >facturado este mes</mat-card-subtitle
+          >
+        </mat-card-header>
+      </mat-card>
+    </div>
+  </div>
+  <div class="row mb-3">
+    <div class="col-md-6 col-lg-8 col-12">
+      <mat-card class="mb-3 h-100">
+        <mat-card-title>Facturado en los últimos 6 meses</mat-card-title>
+        <mat-card-content>
+          <canvas
+            baseChart
+            *ngIf="historicoFacturas.datasets[0].data.length"
+            [data]="historicoFacturas"
+            [options]="graficoLineas"
+            type="line"
+          ></canvas>
+          <span *ngIf="!historicoFacturas.datasets[0].data.length"
+            >No hay facturas registradas</span
+          >
+        </mat-card-content>
+      </mat-card>
+    </div>
+    <div class="col-md-6 col-lg-4 col-12">
+      <mat-card class="mb-3 h-100">
+        <mat-card-title>Ganancias por proyecto</mat-card-title>
+        <mat-card-subtitle>Últimos 30 días</mat-card-subtitle>
+        <mat-card-content class="pt-2">
+          <canvas baseChart
+          *ngIf="dataGananciasProyecto.datasets[0].data.length"
+          [data]="dataGananciasProyecto"
+          [legend]="false"
+          [options]="graficoDona"
+          type="doughnut">
+        </canvas>
+        <span *ngIf="!dataGananciasProyecto.datasets[0].data.length">No hay facturas o proyectos en los últimos 30 días</span>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+  <div class="row mb-1" *ngIf="pendientes || enProceso">
+    <div class="col">
+      <mat-card>
+        <mat-card-title>Proyectos pendientes y en proceso</mat-card-title>
+        <mat-card-content>
+          <mat-table mat-table [dataSource]="datosProyectos" matSort #tablaProyectos>
+          <ng-container matColumnDef="titulo">
+            <mat-header-cell mat-sort-header mat-header-cell *matHeaderCellDef>
+              <mat-icon class="mr-2">network_check</mat-icon>Título
+            </mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let element"><a [routerLink]="['/proyecto', element.id_proyecto]"
+                class="color-primario text-decoration-none">{{ element.titulo }}</a></mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="cliente">
+            <mat-header-cell mat-sort-header mat-header-cell *matHeaderCellDef>
+              <mat-icon class="mr-2">people</mat-icon>Cliente
+            </mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let element">
+              {{ element.cliente }}
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="fecha_envio">
+            <mat-header-cell mat-sort-header mat-header-cell *matHeaderCellDef>
+              <mat-icon class="mr-2">calendar_today</mat-icon>Fecha envío
+            </mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let element">
+              {{ element.fecha_envio | date: "dd/MM/yyyy" }}
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="proyecto_estado">
+            <mat-header-cell mat-sort-header mat-header-cell *matHeaderCellDef>
+              <mat-icon class="mr-2">healing</mat-icon>Estado del proyecto
+            </mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let element">
+              {{ element.proyecto_estado }}
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="cobro_estado">
+            <mat-header-cell mat-sort-header mat-header-cell *matHeaderCellDef>
+              <mat-icon class="mr-2">currency_exchange</mat-icon>Estado de cobro
+            </mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let element">{{
+              element.cobro_estado || "—"
+              }}</mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="tiempo_estimado">
+            <mat-header-cell mat-sort-header mat-header-cell *matHeaderCellDef>
+              <mat-icon class="mr-2">alarm</mat-icon>Duración estimada
+            </mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let element">{{ element.tiempo_estimado }}&nbsp;días
+              <div class="flex-spacer"></div>
+              <button mat-icon-button color="primary" [routerLink]="['/form-proyecto', element.id_proyecto]">
+                <mat-icon>edit</mat-icon>
+              </button>
+            </mat-cell>
+          </ng-container>
+
+          <mat-header-row *matHeaderRowDef="camposProyectos"></mat-header-row>
+          <mat-row mat-row *matRowDef="let row; columns: camposProyectos"></mat-row>
+        </mat-table>
+        <mat-paginator #pagProyectos [pageSizeOptions]="[5, 20, 40]" showFirstLastButtons></mat-paginator>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,131 @@
+<div class="container animated fadeIn fast">
+  <div class="row mb-3">
+    <div class="col">
+      <mat-card>
+        <mat-card-title class="d-flex align-items-center">Facturas
+          <div class="flex-spacer"></div>
+          <button mat-raised-button color="primary" [routerLink]="['/form-factura', 'nueva']">
+            <mat-icon class="mr-2">add</mat-icon> Registrar Factura
+          </button>
+          <!-- <form enctype="multipart/form-data" method="post">
+            <input type="file" name="odfxml" id="odfxml" />
+          </form> -->
+        </mat-card-title>
+      </mat-card>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12 mb-3">
+      <mat-card id="card-facturas">
+        <mat-form-field class="mt-2 w-100">
+          <mat-label>Filtrar</mat-label>
+          <input matInput (keyup)="filtrarFacturas($event.target)" placeholder="Filtrar" />
+        </mat-form-field>
+        <mat-progress-bar mode="indeterminate" *ngIf="cargando"></mat-progress-bar>
+        <mat-table mat-table [dataSource]="datosFacturas" matSort #tablaFacturas>
+          <ng-container matColumnDef="no_DTE">
+            <mat-header-cell mat-sort-header mat-header-cell *matHeaderCellDef>DTE</mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let element">
+              <a [routerLink]="['/factura', element.no_DTE]" class="color-primario text-decoration-none">{{
+                element.no_DTE
+                }}</a>
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="serie">
+            <mat-header-cell mat-sort-header mat-header-cell *matHeaderCellDef>Serie</mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let element">{{ element.serie }}</mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="fecha_autorizacion">
+            <mat-header-cell mat-sort-header mat-header-cell *matHeaderCellDef>
+              <mat-icon class="mr-2">calendar_today</mat-icon>Autorización
+            </mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let element">
+              {{ element.fecha_autorizacion | date: "dd/MM/yyyy" }}
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="fecha_emision">
+            <mat-header-cell mat-sort-header mat-header-cell *matHeaderCellDef>
+              <mat-icon class="mr-2">event_available</mat-icon>Emisión
+            </mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let element">
+              {{ element.fecha_emision | date: "dd/MM/yyyy" }}
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="nombre_receptor">
+            <mat-header-cell mat-sort-header mat-header-cell *matHeaderCellDef>
+              <mat-icon class="mr-2">group</mat-icon>Receptor
+            </mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let element">
+              {{ element.nombre_receptor }}
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="estado_factura">
+            <mat-header-cell mat-sort-header mat-header-cell *matHeaderCellDef>
+              <mat-icon class="mr-2">monitor_heart</mat-icon>Estado
+            </mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let element">{{
+              element.estado_factura | titlecase
+              }}</mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="precio">
+            <mat-header-cell mat-sort-header mat-header-cell *matHeaderCellDef>
+              <mat-icon class="mr-2">paid</mat-icon>Precio
+            </mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let element">
+              <span *ngIf="element.moneda == 'GTQ'">Q.&nbsp;</span>{{
+              element.precio
+              }}
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="proyecto">
+            <mat-header-cell mat-sort-header mat-header-cell *matHeaderCellDef>
+              <mat-icon class="mr-2">table_chart</mat-icon>Proyecto
+            </mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let element"><a class="color-primario text-decoration-none"
+                [routerLink]="['/proyecto', element.proyecto]">{{ element.proyecto }}</a>
+              <div class="flex-spacer"></div>
+              <button mat-icon-button [matMenuTriggerFor]="opcionesFactura" [matMenuTriggerData]="{element}"
+                matTooltip="Opciones">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+            </mat-cell>
+          </ng-container>
+
+          <mat-header-row *matHeaderRowDef="campos"></mat-header-row>
+          <mat-row mat-row *matRowDef="let row; columns: campos"
+            [ngClass]="{ 'factura-anulada': row.estado_factura == 'anulada', 'factura-enviada': row.estado_factura == 'enviada' }">
+          </mat-row>
+        </mat-table>
+        <mat-paginator #pagFacturas [pageSizeOptions]="[10, 20, 50]" showFirstLastButtons></mat-paginator>
+      </mat-card>
+    </div>
+  </div>
+</div>
+
+<mat-menu #opcionesFactura="matMenu">
+  <ng-template matMenuContent let-factura="element">
+  <button mat-menu-item [routerLink]="['/form-factura', factura.no_DTE]">
+    <mat-icon>edit</mat-icon>
+    <span>Editar</span>
+  </button>
+  <button mat-menu-item (click)="enviarFactura(factura)">
+    <mat-icon>forward_to_inbox</mat-icon>
+    <span>Enviar</span>
+  </button>
+  <button mat-menu-item (click)="imprimirFactura(factura)">
+    <mat-icon>print</mat-icon>
+    <span>Imprimir</span>
+  </button>
+  <button mat-menu-item (click)="anularFactura(factura)">
+    <mat-icon>block</mat-icon>
+    <span>Anular</span>
+  </button>
+  </ng-template>
+</mat-menu>

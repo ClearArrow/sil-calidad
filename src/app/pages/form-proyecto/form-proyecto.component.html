@@ -1,0 +1,260 @@
+<form
+  [formGroup]="formulario"
+  (ngSubmit)="guardarProyecto()"
+  *ngIf="!httpServ.cargando"
+  class="animated fadeIn fast"
+>
+  <mat-card>
+    <mat-card-title
+      >{{ id == "nuevo" ? "Crear proyecto" : "Editar proyecto" }}
+    </mat-card-title>
+    <mat-card-content *ngIf="!cotizaciones.length">
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    </mat-card-content>
+    <mat-card-content *ngIf="cotizaciones.length">
+      <div class="seccion-form">
+        <mat-form-field class="w-100" appearance="standard">
+          <mat-label>Cotización</mat-label>
+          <input
+            type="text"
+            matInput
+            formControlName="cotizacion"
+            [matAutocomplete]="cotizaciones"
+          />
+          <mat-error *ngIf="cotizacion.hasError('noExiste')"
+            >No es una cotización válida</mat-error
+          >
+          <mat-autocomplete
+            autoActiveFirstOption
+            #cotizaciones="matAutocomplete"
+            [displayWith]="mostrarTitulo"
+          >
+            <mat-option
+              *ngFor="let coti of cotizacionesFiltradas | async"
+              [value]="coti"
+            >
+              {{ coti.titulo }}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
+      <div class="seccion-form">
+        <mat-form-field class="mitad-form">
+          <mat-label>Fecha de envío</mat-label>
+          <input
+            matInput
+            [matDatepicker]="fechaEnvio"
+            formControlName="fecha_envio"
+          />
+          <mat-hint>DD/MM/YYYY</mat-hint>
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="fechaEnvio"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #fechaEnvio></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field class="mitad-form">
+          <mat-label>Estado</mat-label>
+          <mat-select formControlName="proyecto_estado">
+            <mat-option value="Aprobado">Aprobado</mat-option>
+            <mat-option value="En proceso">En proceso</mat-option>
+            <mat-option value="Terminado">Terminado</mat-option>
+            <mat-option value="Documentos enviados"
+              >Documentos enviados</mat-option
+            >
+            <mat-option value="Pagado">Pagado</mat-option>
+            <mat-option value="Cancelado">Cancelado</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="seccion-form">
+        <mat-form-field appearance="standard" class="w-100">
+          <mat-label>Estado de cobro</mat-label>
+          <mat-select formControlName="cobro_estado">
+            <mat-option value="Pendiente">Pendiente</mat-option>
+            <mat-option value="Enviado">Enviado</mat-option>
+            <mat-option value="Pagado">Pagado</mat-option>
+            <mat-option value="Rechazado">Rechazado</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="seccion-form">
+        <mat-form-field appearance="standard" class="w-100">
+          <mat-label>Comentarios</mat-label>
+          <textarea
+            matInput
+            placeholder="Comentarios"
+            formControlName="comentarios"
+            style="resize: vertical"
+          ></textarea>
+        </mat-form-field>
+      </div>
+      <div class="seccion-form" *ngIf="id_proyecto.value">
+        <button
+          mat-raised-button
+          color="primary"
+          class="mr-2"
+          type="button"
+          *ngIf="!con_orden"
+          (click)="con_orden = true"
+        >
+          Agregar orden de compra
+        </button>
+        <div *ngIf="con_orden">
+          <h2 class="mat-h2 d-flex align-items-center mb-2">
+            Orden de compra
+            <button
+              mat-icon-button
+              color="primary"
+              type="button"
+              *ngIf="ordenCompra.enlace_doc.value"
+              matTooltip="Ver documento"
+              (click)="abrirDocumento(ordenCompra.enlace_doc.value)"
+            >
+              <mat-icon>open_in_new</mat-icon>
+            </button>
+            <div class="flex-spacer"></div>
+            <button
+              mat-icon-button
+              color="warn"
+              type="button"
+              (click)="eliminar('OC')"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </h2>
+          <form [formGroup]="formularioOC">
+            <div class="seccion-form">
+              <mat-form-field appearance="standard" class="mitad-form">
+                <mat-label>Nombre elaborado</mat-label>
+                <input
+                  matInput
+                  placeholder="Nombre elaborado"
+                  formControlName="nombre_elaborado"
+                />
+              </mat-form-field>
+              <mat-form-field class="mitad-form">
+                <mat-label>Fecha recibida</mat-label>
+                <input
+                  matInput
+                  [matDatepicker]="fechaRecibida"
+                  formControlName="fecha_recibida"
+                />
+                <mat-hint>DD/MM/YYYY</mat-hint>
+                <mat-datepicker-toggle
+                  matSuffix
+                  [for]="fechaRecibida"
+                ></mat-datepicker-toggle>
+                <mat-datepicker #fechaRecibida></mat-datepicker>
+              </mat-form-field>
+            </div>
+            <div class="seccion-form d-flex align-items-center mt-2">
+              <button
+                mat-raised-button
+                color="accent"
+                (click)="OCInput.click()"
+                type="button"
+              >
+                <input
+                  hidden
+                  type="file"
+                  #OCInput
+                  (change)="adjuntarArchivo('OC', $event)"
+                />
+                Adjuntar archivo
+              </button>
+              <span *ngIf="OCInput.files && OCInput.files.length"
+                >&nbsp;&nbsp;1 archivo seleccionado</span
+              >
+            </div>
+          </form>
+        </div>
+      </div>
+      <mat-divider class="my-2" *ngIf="id_proyecto.value"></mat-divider>
+      <div class="seccion-form my-2" *ngIf="id_proyecto.value">
+        <button
+          mat-raised-button
+          color="primary"
+          class="mr-2"
+          type="button"
+          *ngIf="!con_vale"
+          (click)="con_vale = true"
+        >
+          Agregar vale de recepción
+        </button>
+        <div *ngIf="con_vale">
+          <h2 class="mat-h2 d-flex align-items-center mb-2">
+            Vale de recepción
+            <button
+              mat-icon-button
+              color="primary"
+              type="button"
+              *ngIf="valeRecepcion.enlace_doc.value"
+              matTooltip="Ver documento"
+              (click)="abrirDocumento(valeRecepcion.enlace_doc.value)"
+            >
+              <mat-icon>open_in_new</mat-icon>
+            </button>
+            <div class="flex-spacer"></div>
+            <button
+              mat-icon-button
+              color="warn"
+              type="button"
+              (click)="eliminar('VR')"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </h2>
+          <form [formGroup]="formularioVR">
+            <div class="seccion-form">
+              <mat-form-field class="mitad-form">
+                <mat-label>Fecha recibido</mat-label>
+                <input
+                  matInput
+                  [matDatepicker]="fechaRecibido"
+                  formControlName="fecha_recibido"
+                />
+                <mat-hint>DD/MM/YYYY</mat-hint>
+                <mat-datepicker-toggle
+                  matSuffix
+                  [for]="fechaRecibido"
+                ></mat-datepicker-toggle>
+                <mat-datepicker #fechaRecibido></mat-datepicker>
+              </mat-form-field>
+            </div>
+            <div class="seccion-form d-flex align-items-center mt-2">
+              <button
+                mat-raised-button
+                color="accent"
+                (click)="VRInput.click()"
+                type="button"
+              >
+                <input
+                  hidden
+                  type="file"
+                  #VRInput
+                  (change)="adjuntarArchivo('VR', $event)"
+                />
+                Adjuntar archivo
+              </button>
+              <span *ngIf="VRInput.files && VRInput.files.length"
+                >&nbsp;&nbsp;1 archivo seleccionado</span
+              >
+            </div>
+          </form>
+        </div>
+      </div>
+    </mat-card-content>
+    <mat-card-actions align="end">
+      <button
+        mat-stroked-button
+        color="warn"
+        type="button"
+        (click)="location.back()"
+      >
+        Cancelar
+      </button>
+      <button mat-stroked-button color="primary" type="submit">Guardar</button>
+    </mat-card-actions>
+  </mat-card>
+</form>

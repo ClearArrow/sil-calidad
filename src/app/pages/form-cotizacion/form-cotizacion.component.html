@@ -1,0 +1,107 @@
+<form [formGroup]="formulario" (ngSubmit)="guardarCotizacion()" class="animated fadeIn fast">
+  <mat-card>
+    <mat-card-title>{{
+      id == "nueva" ? "Crear cotización" : "Editar cotización"
+    }}</mat-card-title>
+    <mat-card-content>
+      <div class="seccion-form">
+        <mat-form-field appearance="standard" class="w-100">
+          <mat-label>Título</mat-label>
+          <input matInput placeholder="Título" formControlName="titulo" />
+        </mat-form-field>
+      </div>
+      <div class="seccion-form">
+        <mat-form-field class="mitad-form" appearance="standard">
+          <mat-label>Cliente</mat-label>
+          <input
+            type="text"
+            matInput
+            formControlName="cliente"
+            [matAutocomplete]="clientes"
+          />
+          <mat-error *ngIf="cliente.hasError('noExiste')"
+            >No es un cliente válida</mat-error
+          >
+          <mat-autocomplete
+            autoActiveFirstOption
+            #clientes="matAutocomplete"
+            [displayWith]="mostrarNombre"
+          >
+            <mat-option
+              *ngFor="let cliente of clientesFiltrados | async"
+              [value]="cliente"
+            >
+              {{ cliente.nombre }}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+        <mat-form-field appearance="standard" class="mitad-form">
+          <mat-label>Tiempo estimado (días)</mat-label>
+          <input
+            matInput
+            placeholder="Tiempo estimado (días)"
+            formControlName="tiempo_estimado"
+          />
+          <mat-error *ngIf="tiempo_estimado.hasError('noNumero')"
+            >Ingresar un número</mat-error
+          >
+        </mat-form-field>
+      </div>
+      <div class="seccion-form">
+        <mat-form-field appearance="standard" class="w-100">
+          <mat-label>Planta</mat-label>
+          <input matInput placeholder="Planta" formControlName="planta" />
+        </mat-form-field>
+      </div>
+      <div class="seccion-form">
+        <mat-form-field appearance="standard" class="w-100">
+          <mat-label>Observaciones</mat-label>
+          <textarea matInput placeholder="Observaciones" formControlName="observaciones" style="resize: vertical;"></textarea>
+        </mat-form-field>
+      </div>
+      <div class="seccion-form mt-4">
+        <h2 class="mat-h2 d-flex">
+          Detalle de la cotización
+          <div class="flex-spacer"></div>
+          <button
+            mat-mini-fab
+            color="primary"
+            matTooltip="Agregar detalle"
+            type="button"
+            (click)="agregarDetalle()"
+          >
+            <mat-icon>add</mat-icon>
+          </button>
+        </h2>
+        <div class="mat-table">
+          <div class="mat-header-row">
+            <div class="mat-header-cell">Descripción</div>
+            <div class="mat-header-cell" style="max-width: 150px">Cantidad</div>
+            <div class="mat-header-cell" style="max-width: 150px">Unidad</div>
+            <div class="mat-header-cell" style="max-width: 150px">Precio</div>
+          </div>
+          <app-detalle-cotizacion
+            *ngFor="let detalle of detalles; let i = index; trackBy: trackIndex"
+            [cantidad]="detalle.cantidad"
+            [precio]="detalle.precio"
+            [detalle]="detalle.detalle"
+            (itemActualizado)="actualizarDetalles($event, i)"
+            (quitarDetalle)="quitarDetalle(i)"
+            [unidad]="detalle.unidad"
+          ></app-detalle-cotizacion>
+        </div>
+      </div>
+    </mat-card-content>
+    <mat-card-actions align="end">
+      <button
+        mat-stroked-button
+        color="warn"
+        type="button"
+        (click)="location.back()"
+      >
+        Cancelar
+      </button>
+      <button mat-stroked-button color="primary" type="submit">Guardar</button>
+    </mat-card-actions>
+  </mat-card>
+</form>

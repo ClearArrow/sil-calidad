@@ -1,0 +1,18 @@
+<h1 mat-dialog-title>Cambiar estado del proyecto</h1>
+<div mat-dialog-content>
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Estado</mat-label>
+    <mat-select [(ngModel)]="estado">
+      <mat-option value="Aprobado">Aprobado</mat-option>
+      <mat-option value="En proceso">En proceso</mat-option>
+      <mat-option value="Terminado">Terminado</mat-option>
+      <mat-option value="Documentos enviados">Documentos enviados</mat-option>
+      <mat-option value="Pagado">Pagado</mat-option>
+      <mat-option value="Cancelado">Cancelado</mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancelar</button>
+  <button mat-button [mat-dialog-close]="estado" cdkFocusInitial>Aceptar</button>
+</mat-dialog-actions>

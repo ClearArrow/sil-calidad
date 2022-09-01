@@ -1,0 +1,9 @@
+.resumen mat-card {
+  max-height: 200px;
+}
+
+mat-icon.mat-card-avatar {
+  width: 40px;
+  height: 40px;
+  font-size: 40px;
+}

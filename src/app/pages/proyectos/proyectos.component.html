@@ -1,0 +1,104 @@
+<div class="container animated fadeIn fast">
+  <div class="row">
+    <div class="col">
+      <mat-card>
+        <mat-card-title class="d-flex align-items-center">Proyectos
+          <div class="flex-spacer"></div>
+          <button mat-raised-button color="primary" [routerLink]="['/form-proyecto', 'nuevo']">
+            <mat-icon class="mr-2">add</mat-icon> Crear proyecto
+          </button>
+        </mat-card-title>
+      </mat-card>
+    </div>
+  </div>
+
+  <div class="row mt-3">
+    <div class="col-12 proyectos">
+      <mat-tab-group class="tabs-proyectos">
+        <mat-tab label="En proceso">
+          <mat-card class="pb-0">
+            <mat-form-field class="w-100">
+              <mat-label>Buscar</mat-label>
+              <input name="estado" placeholder="Buscar" matInput [(ngModel)]="textoBuscado" (ngModelChange)="actualizarPaginas()" />
+              <mat-icon matSuffix>search</mat-icon>
+            </mat-form-field>
+          </mat-card>
+          <mat-card class="proyecto" matRipple *ngFor="let proyecto of enProcesoBuscados()"
+            [matRippleDisabled]="deshabilitarRipple" [routerLink]="['/proyecto', proyecto.id_proyecto]">
+            <mat-card-title class="mat-h2 d-flex w-100 mb-0 align-items-center">
+              {{ proyecto.cotizacion.titulo }}
+              <div class="flex-spacer"></div>
+              <span class="fecha-proyecto">{{ proyecto.fecha_envio| date: "dd MMM, yyyy" }}
+                <span class="d-none d-sm-inline" *ngIf="proyecto.proyecto_estado == 'En proceso'"> — {{
+                  proyecto.dias_restantes }} días
+                  restantes </span>
+              </span>&nbsp;
+              <mat-icon color="primary" *ngIf="proyecto.dias_restantes && proyecto.dias_restantes > 10">event_available
+              </mat-icon>
+              <mat-icon class="color-advertencia"
+                *ngIf="proyecto.dias_restantes && proyecto.dias_restantes <= 10 && proyecto.dias_restantes > 5">warning
+              </mat-icon>
+              <mat-icon color="warn" *ngIf="!proyecto.dias_restantes || proyecto.dias_restantes <= 5">error</mat-icon>
+            </mat-card-title>
+            <mat-card-content class="mb-1">{{ proyecto.cotizacion.cliente.nombre || '' }}</mat-card-content>
+            <!-- <mat-card-content class="mb-0"></mat-card-content> -->
+            <mat-card-actions class="pt-0" align="end">
+              <button mat-icon-button matTooltip="Cambiar estado" color="primary"
+                (mouseenter)="deshabilitarRipple = true" (mouseleave)="deshabilitarRipple = false"
+                (click)="actualizarEstado(proyecto, $event)">
+                <mat-icon>edit_calendar</mat-icon>
+              </button>
+              <button mat-icon-button matTooltip="Editar" color="accent" (mouseenter)="deshabilitarRipple = true"
+                (mouseleave)="deshabilitarRipple = false" [routerLink]="['/form-proyecto', proyecto.id_proyecto]">
+                <mat-icon>edit</mat-icon>
+              </button>
+            </mat-card-actions>
+          </mat-card>
+        </mat-tab>
+        <mat-tab label="Todos">
+          <mat-card class="pb-0">
+            <mat-form-field class="w-100">
+              <mat-label>Buscar</mat-label>
+              <input name="estado" placeholder="Buscar" matInput [(ngModel)]="textoBuscado" (ngModelChange)="actualizarPaginas()" />
+              <mat-icon matSuffix>search</mat-icon>
+            </mat-form-field>
+          </mat-card>
+          <mat-card class="proyecto pb-2" matRipple *ngFor="let proyecto of proyectosMostrados"
+            [matRippleDisabled]="deshabilitarRipple" [routerLink]="['/proyecto', proyecto.id_proyecto]">
+            <mat-card-title class="mat-h2 d-flex w-100 mb-0 align-items-center">
+              {{ proyecto.cotizacion.titulo }}
+              <div class="flex-spacer"></div>
+              <span class="fecha-proyecto">{{ proyecto.fecha_envio| date: "dd MMM, yyyy" }}&nbsp;
+              </span>
+              <span [ngSwitch]="proyecto.proyecto_estado" class="d-inline-flex align-items-center"
+                (mouseenter)="deshabilitarRipple = true" (mouseleave)="deshabilitarRipple = false">
+                <mat-icon *ngSwitchCase="'Aprobado'" matTooltip="Aprobado" color="accent">grade</mat-icon>
+                <mat-icon color="accent" *ngSwitchCase="'En proceso'" matTooltip="En proceso">construction</mat-icon>
+                <mat-icon color="primary" *ngSwitchCase="'Terminado'" matTooltip="Terminado">done_all</mat-icon>
+                <mat-icon color="primary" *ngSwitchCase="'Documentos enviados'" matTooltip="Documentos enviados">
+                  receipt_long</mat-icon>
+                <mat-icon color="primary" *ngSwitchCase="'Pagado'" matTooltip="Pagado">paid</mat-icon>
+                <mat-icon color="warn" *ngSwitchCase="'Cancelado'" matTooltip="Cancelado">block</mat-icon>
+              </span>
+            </mat-card-title>
+            <mat-card-content class="mb-1">{{ proyecto.cotizacion.cliente.nombre || '' }}</mat-card-content>
+            <!-- <mat-card-content class="mb-0"></mat-card-content> -->
+            <mat-card-actions class="pt-0" align="end">
+              <button mat-icon-button matTooltip="Cambiar estado" color="primary"
+                (mouseenter)="deshabilitarRipple = true" (mouseleave)="deshabilitarRipple = false"
+                (click)="actualizarEstado(proyecto, $event)">
+                <mat-icon>edit_calendar</mat-icon>
+              </button>
+              <button mat-icon-button matTooltip="Editar" (mouseenter)="deshabilitarRipple = true"
+                (mouseleave)="deshabilitarRipple = false" [routerLink]="['/form-proyecto', proyecto.id_proyecto]">
+                <mat-icon>edit</mat-icon>
+              </button>
+            </mat-card-actions>
+          </mat-card>
+          <mat-paginator class="paginator-proyectos" [length]="proyectos.length" [pageSize]="5"
+            [pageSizeOptions]="[5, 25, 50]" (page)="onPageChange($event)"></mat-paginator>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  </div>
+</div>

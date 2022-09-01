@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "serviciosil": {
+      "hosting": {
+        "prueba": [
+          "serviciosil"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "serviciosil"
+  }
+}
